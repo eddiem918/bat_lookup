@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import pandas as pd
 import re
 
@@ -15,6 +15,9 @@ def normalize(value):
 
 df["MODEL_NORMALIZED"] = df["Model"].apply(normalize)
 
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 @app.route("/")
 def home():
