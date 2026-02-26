@@ -1,6 +1,8 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Bat Compression Lookup</title>
     <style>
 
@@ -135,55 +137,98 @@ button + button:hover {
       <!-- LEFT COLUMN: Exact Model Search -->
       <div class="column">
         <h3>Search by Model Number</h3>
-        <p>Search parameters are NOT case senstive.</p>
+        <p>Search parameters are NOT case sensitive.</p>
 
+        <label for="modelInput">Model Number</label>
         <input id="modelInput" placeholder="Enter Model Number (Example: AUSADL213-2)" />
         <button onclick="lookup()">Search</button>
         <button onclick="clearModel()">Clear</button>
 
-        <div id="modelResult"></div>
+        <div id="modelResult" role="status" aria-live="polite"></div>
       </div>
 
       <!-- RIGHT COLUMN: Manufacturer + Description -->
       <div class="column">
         <h3>Search by Manufacturer & Model Name</h3>
-        <p>Search parameters are NOT case senstive. Partial searches are supported.</p>
+        <p>Search parameters are NOT case sensitive. Partial searches are supported.</p>
+        <label for="manufacturerInput">Manufacturer</label>
         <input id="manufacturerInput" placeholder="Manufacturer (Example: Miken)" />
+        <label for="descriptionInput">Model Name</label>
         <input id="descriptionInput" placeholder="Model Name (Example: Freak)" />
         <button onclick="searchDescription()">Search</button>
         <button onclick="clearDescription()">Clear</button>
 
-        <div id="descResult"></div>
+        <div id="descResult" role="status" aria-live="polite"></div>
       </div>
     </div>
 
     <script>
+      function makeFieldRow(labelText, valueText) {
+        const row = document.createElement("div");
+        const label = document.createElement("strong");
+        label.textContent = `${labelText}: `;
+        row.appendChild(label);
+        row.appendChild(document.createTextNode(valueText ?? ""));
+        return row;
+      }
+
+      function makeBatCard(bat) {
+        const card = document.createElement("div");
+        card.className = "result-box";
+
+        card.appendChild(makeFieldRow("Manufacturer", String(bat.Manufacturer ?? "")));
+        card.appendChild(makeFieldRow("Model Number", String(bat.Model ?? "")));
+        card.appendChild(makeFieldRow("Model Name", String(bat.Description ?? "")));
+
+        const cutoff = document.createElement("div");
+        cutoff.className = "big-cutoff";
+        const cutoffValue = String(bat["Barrel Compression Cutoff (psi)"] ?? "");
+        cutoff.textContent = `Barrel Compression Limit: ${cutoffValue} psi`;
+        card.appendChild(cutoff);
+
+        return card;
+      }
+
+      function renderTextMessage(resultDiv, message) {
+        resultDiv.replaceChildren();
+        resultDiv.textContent = message;
+      }
+
       async function lookup() {
         const model = document.getElementById("modelInput").value.trim();
         const resultDiv = document.getElementById("modelResult");
 
-        if (!model) return;
-
-        const response = await fetch(`/lookup?model=${encodeURIComponent(model)}`);
-
-        if (response.status === 404) {
-          resultDiv.innerHTML = "Model not found.";
+        if (!model) {
+          renderTextMessage(resultDiv, "Please enter a model number.");
           return;
         }
 
-        const data = await response.json();
-        const bat = data[0];
+        try {
+          const response = await fetch(`/lookup?model=${encodeURIComponent(model)}`);
 
-        resultDiv.innerHTML = `
-        <div class="result-box">
-            <div><strong>Manufacturer:</strong> ${bat.Manufacturer}</div>
-            <div><strong>Model Number:</strong> ${bat.Model}</div>
-            <div><strong>Model Name:</strong> ${bat.Description}</div>
-            <div class="big-cutoff">
-                Barrel Compression Limit: ${bat["Barrel Compression Cutoff (psi)"]} psi
-            </div>
-        </div>
-    `;
+          if (response.status === 404) {
+            renderTextMessage(resultDiv, "Model not found.");
+            return;
+          }
+
+          if (!response.ok) {
+            throw new Error(`Request failed with status ${response.status}`);
+          }
+
+          const data = await response.json();
+          const bat = data?.[0];
+          resultDiv.replaceChildren();
+
+          if (!bat) {
+            renderTextMessage(resultDiv, "Model not found.");
+            return;
+          }
+
+          resultDiv.appendChild(makeBatCard(bat));
+        } catch (error) {
+          console.error("Lookup failed:", error);
+          renderTextMessage(resultDiv, "Something went wrong. Please try again.");
+        }
       }
 
       async function searchDescription() {
@@ -195,41 +240,51 @@ button + button:hover {
           .value.trim();
         const resultDiv = document.getElementById("descResult");
 
-        const response = await fetch(
-  `/search?manufacturer=${encodeURIComponent(manufacturer)}&description=${encodeURIComponent(description)}`
-);
-
-        if (response.status === 404) {
-          resultDiv.innerHTML = "No matches found.";
+        if (!manufacturer && !description) {
+          renderTextMessage(
+            resultDiv,
+            "Please enter a manufacturer, a model name, or both.",
+          );
           return;
         }
 
-        const data = await response.json();
+        try {
+          const response = await fetch(
+            `/search?manufacturer=${encodeURIComponent(manufacturer)}&description=${encodeURIComponent(description)}`,
+          );
 
-        if (data.length > 25) {
-          resultDiv.innerHTML = `
-              <div class="result-box">
-                Too many matches (${data.length}). 
-                Please refine your search.
-              </div>
-          `;
-          return;
+          if (response.status === 404) {
+            renderTextMessage(resultDiv, "No matches found.");
+            return;
+          }
+
+          if (!response.ok) {
+            throw new Error(`Request failed with status ${response.status}`);
+          }
+
+          const data = await response.json();
+          resultDiv.replaceChildren();
+
+          if (!Array.isArray(data) || data.length === 0) {
+            renderTextMessage(resultDiv, "No matches found.");
+            return;
+          }
+
+          if (data.length > 25) {
+            renderTextMessage(
+              resultDiv,
+              `Too many matches (${data.length}). Please refine your search.`,
+            );
+            return;
+          }
+
+          for (const bat of data) {
+            resultDiv.appendChild(makeBatCard(bat));
+          }
+        } catch (error) {
+          console.error("Search failed:", error);
+          renderTextMessage(resultDiv, "Something went wrong. Please try again.");
         }
-
-        resultDiv.innerHTML = data
-          .map(
-            (bat) => `
-        <div class="result-box">
-            <div><strong>Manufacturer:</strong> ${bat.Manufacturer}</div>
-            <div><strong>Model Number:</strong> ${bat.Model}</div>
-            <div><strong>Model Name:</strong> ${bat.Description}</div>
-            <div class="big-cutoff">
-                Barrel Compression Limit: ${bat["Barrel Compression Cutoff (psi)"]} psi
-            </div>
-        </div>
-    `,
-          )
-          .join("");
       }
 
       function clearModel() {
