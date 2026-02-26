@@ -93,13 +93,13 @@ button + button:hover {
 
 /* Big cutoff styling */
 .big-cutoff {
-    font-size: 28px;
+    font-size: 16px;
     font-weight: bold;
-    margin-top: 10px;
+    margin-top: 5px;
     color: #001f46;
     background-color: #f79126;
-    padding: 6px 10px;
-    border-radius: 6px;
+    padding: 3px 5px;
+    border-radius: 3px;
     display: inline-block;
 }
 
@@ -216,15 +216,24 @@ button + button:hover {
           }
 
           const data = await response.json();
-          const bat = data?.[0];
-          resultDiv.replaceChildren();
+resultDiv.replaceChildren();
 
-          if (!bat) {
-            renderTextMessage(resultDiv, "Model not found.");
-            return;
-          }
+if (!Array.isArray(data) || data.length === 0) {
+  renderTextMessage(resultDiv, "Model not found.");
+  return;
+}
 
-          resultDiv.appendChild(makeBatCard(bat));
+if (data.length > 25) {
+  renderTextMessage(
+    resultDiv,
+    `Too many matches (${data.length}). Please refine your search.`,
+  );
+  return;
+}
+
+for (const bat of data) {
+  resultDiv.appendChild(makeBatCard(bat));
+}
         } catch (error) {
           console.error("Lookup failed:", error);
           renderTextMessage(resultDiv, "Something went wrong. Please try again.");
@@ -289,13 +298,13 @@ button + button:hover {
 
       function clearModel() {
     document.getElementById("modelInput").value = "";
-    document.getElementById("modelResult").innerHTML = "";
+    document.getElementById("modelResult").replaceChildren();
 }
 
 function clearDescription() {
     document.getElementById("manufacturerInput").value = "";
     document.getElementById("descriptionInput").value = "";
-    document.getElementById("descResult").innerHTML = "";
+    document.getElementById("descResult").replaceChildren();
 }
 
 document.getElementById("modelInput")
@@ -304,6 +313,11 @@ document.getElementById("modelInput")
   });
 
 document.getElementById("descriptionInput")
+  .addEventListener("keydown", function (e) {
+    if (e.key === "Enter") searchDescription();
+  });
+
+  document.getElementById("manufacturerInput")
   .addEventListener("keydown", function (e) {
     if (e.key === "Enter") searchDescription();
   });
