@@ -5,142 +5,166 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Bat Compression Lookup</title>
     <style>
-
       body {
-    font-family: Arial, sans-serif;
-    padding: 40px;
-    max-width: 1100px;
-    margin: auto;
-    background-color: #f4f6f8;
-    color: #001f46;
-}
+        font-family: Arial, sans-serif;
+        padding: 40px;
+        max-width: 1100px;
+        margin: auto;
+        background-color: #f4f6f8;
+        color: #001f46;
+      }
 
-/* Header */
-.header {
-    text-align: center;
-    margin-bottom: 40px;
-}
+      /* Header */
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
 
-.logo {
-    max-width: 220px;
-    margin-bottom: 15px;
-}
+      .logo {
+        max-width: 220px;
+        margin-bottom: 15px;
+      }
 
-h1 {
-    margin: 0;
-    color: #001f46;
-}
+      h1 {
+        margin: 0;
+        color: #001f46;
+      }
 
-/* Layout */
-.container {
-    display: flex;
-    gap: 40px;
-}
+      /* Layout */
+      .container {
+        display: flex;
+        gap: 40px;
+      }
 
-.column {
-    flex: 1;
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 31, 70, 0.08);
-}
+      .column {
+        flex: 1;
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 31, 70, 0.08);
+      }
 
-/* Inputs */
-input {
-    padding: 12px;
-    width: 100%;
-    font-size: 16px;
-    margin-bottom: 12px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
+      /* Inputs */
+      input {
+        padding: 12px;
+        width: 100%;
+        font-size: 16px;
+        margin-bottom: 12px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
 
-/* Buttons */
-button {
-    padding: 12px;
-    width: 100%;
-    font-size: 16px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    background-color: #72a53f;
-    color: white;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
-}
+      /* Buttons */
+      button {
+        padding: 12px;
+        width: 100%;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background-color: #72a53f;
+        color: white;
+        font-weight: bold;
+        transition: background-color 0.2s ease;
+      }
 
-button:hover {
-    background-color: #f79126;
-}
+      button:hover {
+        background-color: #f79126;
+      }
 
-/* Result cards */
-.result-box {
-    margin-top: 15px;
-    padding: 15px;
-    border-radius: 8px;
-    background-color: #f9fafb;
-    border-left: 6px solid #72a53f;
-}
+      /* Result cards */
+      .result-box {
+        margin-top: 15px;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #f9fafb;
+        border-left: 6px solid #72a53f;
+      }
 
-button + button {
-    margin-top: 8px;
-    background-color: #001f46;
-}
+      button + button {
+        margin-top: 8px;
+        background-color: #001f46;
+      }
 
-button + button:hover {
-    background-color: #f79126;
-}
+      button + button:hover {
+        background-color: #f79126;
+      }
 
-/* Big cutoff styling */
-.big-cutoff {
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 5px;
-    color: #001f46;
-    background-color: #f79126;
-    padding: 3px 5px;
-    border-radius: 3px;
-    display: inline-block;
-}
+      /* Big cutoff styling */
+      .big-cutoff {
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: 5px;
+        color: #001f46;
+        background-color: #f79126;
+        padding: 3px 5px;
+        border-radius: 3px;
+        display: inline-block;
+      }
 
-.footer a {
-    color: #001f46;
-    text-decoration: underline;
-}
+      .footer {
+        margin-top: 100px; /* More separation */
+        padding-top: 30px;
+        border-top: 1px solid #ddd;
+        text-align: center;
+        font-size: 11px; /* Smaller */
+        color: #777; /* Softer */
+        line-height: 1.6;
+      }
 
-.footer a:hover {
-    color: #f79126;
-}
+      .footer .meta {
+        margin-bottom: 6px;
+      }
 
-@media (max-width: 900px) {
-    .container {
-        flex-direction: column;
-    }
+      .footer .disclaimer {
+        margin-top: 10px;
+        font-size: 10px; /* Even smaller for legal text */
+        color: #888;
+        max-width: 750px;
+        margin-left: auto;
+        margin-right: auto;
+      }
 
-    body {
-        padding: 20px;
-    }
-}
+      .footer a {
+        color: #001f46;
+        text-decoration: underline;
+      }
+
+      .footer a:hover {
+        color: #f79126;
+      }
+
+      @media (max-width: 900px) {
+        .container {
+          flex-direction: column;
+        }
+
+        body {
+          padding: 20px;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="header">
-    <img 
+      <img
         src="https://cdn1.sportngin.com/attachments/photo/322e-207774775/SFAAA_Vector_logo_Rainbow_v3.png"
         alt="SFAAA Logo"
         class="logo"
-    >
-    <h1>SFAAA Bat Compression Lookup Tool</h1>
-</div>
+      />
+      <h1>SFAAA Bat Compression Lookup Tool</h1>
+    </div>
 
     <div class="container">
       <!-- LEFT COLUMN: Exact Model Search -->
       <div class="column">
         <h3>Search by Model Number</h3>
-        <p>Search parameters are NOT case sensitive.</p>
 
         <label for="modelInput">Model Number</label>
-        <input id="modelInput" placeholder="Enter Model Number (Example: AUSADL213-2)" />
+        <input
+          id="modelInput"
+          placeholder="Enter Model Number (Example: AUSADL213-2)"
+        />
         <button onclick="lookup()">Search</button>
         <button onclick="clearModel()">Clear</button>
 
@@ -150,11 +174,16 @@ button + button:hover {
       <!-- RIGHT COLUMN: Manufacturer + Description -->
       <div class="column">
         <h3>Search by Manufacturer & Model Name</h3>
-        <p>Search parameters are NOT case sensitive. Partial searches are supported.</p>
         <label for="manufacturerInput">Manufacturer</label>
-        <input id="manufacturerInput" placeholder="Manufacturer (Example: Miken)" />
+        <input
+          id="manufacturerInput"
+          placeholder="Manufacturer (Example: Miken)"
+        />
         <label for="descriptionInput">Model Name</label>
-        <input id="descriptionInput" placeholder="Model Name (Example: Freak)" />
+        <input
+          id="descriptionInput"
+          placeholder="Model Name (Example: Freak)"
+        />
         <button onclick="searchDescription()">Search</button>
         <button onclick="clearDescription()">Clear</button>
 
@@ -176,13 +205,19 @@ button + button:hover {
         const card = document.createElement("div");
         card.className = "result-box";
 
-        card.appendChild(makeFieldRow("Manufacturer", String(bat.Manufacturer ?? "")));
+        card.appendChild(
+          makeFieldRow("Manufacturer", String(bat.Manufacturer ?? "")),
+        );
         card.appendChild(makeFieldRow("Model Number", String(bat.Model ?? "")));
-        card.appendChild(makeFieldRow("Model Name", String(bat.Description ?? "")));
+        card.appendChild(
+          makeFieldRow("Model Name", String(bat.Description ?? "")),
+        );
 
         const cutoff = document.createElement("div");
         cutoff.className = "big-cutoff";
-        const cutoffValue = String(bat["Barrel Compression Cutoff (psi)"] ?? "");
+        const cutoffValue = String(
+          bat["Barrel Compression Cutoff (psi)"] ?? "",
+        );
         cutoff.textContent = `Barrel Compression Limit: ${cutoffValue} psi`;
         card.appendChild(cutoff);
 
@@ -204,7 +239,9 @@ button + button:hover {
         }
 
         try {
-          const response = await fetch(`/lookup?model=${encodeURIComponent(model)}`);
+          const response = await fetch(
+            `/lookup?model=${encodeURIComponent(model)}`,
+          );
 
           if (response.status === 404) {
             renderTextMessage(resultDiv, "Model not found.");
@@ -216,27 +253,30 @@ button + button:hover {
           }
 
           const data = await response.json();
-resultDiv.replaceChildren();
+          resultDiv.replaceChildren();
 
-if (!Array.isArray(data) || data.length === 0) {
-  renderTextMessage(resultDiv, "Model not found.");
-  return;
-}
+          if (!Array.isArray(data) || data.length === 0) {
+            renderTextMessage(resultDiv, "Model not found.");
+            return;
+          }
 
-if (data.length > 25) {
-  renderTextMessage(
-    resultDiv,
-    `Too many matches (${data.length}). Please refine your search.`,
-  );
-  return;
-}
+          if (data.length > 25) {
+            renderTextMessage(
+              resultDiv,
+              `Too many matches (${data.length}). Please refine your search.`,
+            );
+            return;
+          }
 
-for (const bat of data) {
-  resultDiv.appendChild(makeBatCard(bat));
-}
+          for (const bat of data) {
+            resultDiv.appendChild(makeBatCard(bat));
+          }
         } catch (error) {
           console.error("Lookup failed:", error);
-          renderTextMessage(resultDiv, "Something went wrong. Please try again.");
+          renderTextMessage(
+            resultDiv,
+            "Something went wrong. Please try again.",
+          );
         }
       }
 
@@ -292,51 +332,59 @@ for (const bat of data) {
           }
         } catch (error) {
           console.error("Search failed:", error);
-          renderTextMessage(resultDiv, "Something went wrong. Please try again.");
+          renderTextMessage(
+            resultDiv,
+            "Something went wrong. Please try again.",
+          );
         }
       }
 
       function clearModel() {
-    document.getElementById("modelInput").value = "";
-    document.getElementById("modelResult").replaceChildren();
-}
+        document.getElementById("modelInput").value = "";
+        document.getElementById("modelResult").replaceChildren();
+      }
 
-function clearDescription() {
-    document.getElementById("manufacturerInput").value = "";
-    document.getElementById("descriptionInput").value = "";
-    document.getElementById("descResult").replaceChildren();
-}
+      function clearDescription() {
+        document.getElementById("manufacturerInput").value = "";
+        document.getElementById("descriptionInput").value = "";
+        document.getElementById("descResult").replaceChildren();
+      }
 
-document.getElementById("modelInput")
-  .addEventListener("keydown", function (e) {
-    if (e.key === "Enter") lookup();
-  });
+      document
+        .getElementById("modelInput")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter") lookup();
+        });
 
-document.getElementById("descriptionInput")
-  .addEventListener("keydown", function (e) {
-    if (e.key === "Enter") searchDescription();
-  });
+      document
+        .getElementById("descriptionInput")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter") searchDescription();
+        });
 
-  document.getElementById("manufacturerInput")
-  .addEventListener("keydown", function (e) {
-    if (e.key === "Enter") searchDescription();
-  });
+      document
+        .getElementById("manufacturerInput")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter") searchDescription();
+        });
     </script>
     <div class="footer">
-  <div class="meta">
-    <strong>Version:</strong> 1.0.0 |
-    <strong>Last Updated:</strong> February 19, 2026
-  </div>
+      <div class="meta">
+        <strong>Version:</strong> 1.0.0 |
+        <strong>Last Updated:</strong> February 19, 2026
+      </div>
 
-  <div class="meta">
-    Data Source: USA Softball Non-Linear Bat Compression Threshold List
-    (as of February 19, 2026)
-  </div>
+      <div class="meta">
+        Data Source: USA Softball Non-Linear Bat Compression Threshold List (as
+        of February 19, 2026)
+      </div>
 
-  <div class="meta disclaimer">
-    This is an independently developed lookup tool created and maintained by
-    <a href="mailto:e.mullins918@gmail.com">Ed Mullins</a>. Information is provided for administrative reference only and does not supersede official governing documentation.
-  </div>
-</div>
+      <div class="meta disclaimer">
+        This is an independently developed lookup tool created and maintained by
+        <a href="mailto:e.mullins918@gmail.com">Ed Mullins</a>. Information is
+        provided for administrative reference only and does not supersede
+        official governing documentation.
+      </div>
+    </div>
   </body>
 </html>
