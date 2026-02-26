@@ -126,8 +126,9 @@ button + button:hover {
       <!-- LEFT COLUMN: Exact Model Search -->
       <div class="column">
         <h3>Search by Model Number</h3>
+        <p>Search parameters are NOT case senstive.</p>
 
-        <input id="modelInput" placeholder="Enter Model Number" />
+        <input id="modelInput" placeholder="Enter Model Number (Example: AUSADL213-2)" />
         <button onclick="lookup()">Search</button>
         <button onclick="clearModel()">Clear</button>
 
@@ -137,9 +138,9 @@ button + button:hover {
       <!-- RIGHT COLUMN: Manufacturer + Description -->
       <div class="column">
         <h3>Search by Manufacturer & Model Name</h3>
-
-        <input id="manufacturerInput" placeholder="Manufacturer" />
-        <input id="descriptionInput" placeholder="Model Name" />
+        <p>Search parameters are NOT case senstive. Partial searches are supported.</p>
+        <input id="manufacturerInput" placeholder="Manufacturer (Example: Miken)" />
+        <input id="descriptionInput" placeholder="Model Name (Example: Freak)" />
         <button onclick="searchDescription()">Search</button>
         <button onclick="clearDescription()">Clear</button>
 
