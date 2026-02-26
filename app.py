@@ -29,12 +29,37 @@ def lookup():
     model = request.args.get("model", "")
     normalized_model = normalize(model)
 
-    matches = df[df["MODEL_NORMALIZED"] == normalized_model]
+    if not normalized_model:
+        return jsonify({"error": "Model not provided"}), 400
 
-    if matches.empty:
+    # 1️⃣ Exact match first
+    exact_matches = df[df["MODEL_NORMALIZED"] == normalized_model]
+
+    if not exact_matches.empty:
+        results = exact_matches[[
+            "Manufacturer",
+            "Model",
+            "Description",
+            "Barrel Compression Cutoff (psi)",
+            "Date Added"
+        ]].to_dict(orient="records")
+
+        return jsonify(results)
+
+    # 2️⃣ Partial match fallback
+    partial_matches = df[
+        df["MODEL_NORMALIZED"].str.contains(normalized_model, na=False)
+    ]
+
+    if partial_matches.empty:
         return jsonify({"error": "Model not found"}), 404
 
-    results = matches[[
+    if len(partial_matches) > 25:
+        return jsonify({
+            "error": f"Too many matches ({len(partial_matches)}). Refine search."
+        }), 400
+
+    results = partial_matches[[
         "Manufacturer",
         "Model",
         "Description",
