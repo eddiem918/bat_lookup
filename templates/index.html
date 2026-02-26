@@ -1,63 +1,134 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Bat Compression Lookup</title>
     <style>
-      body {
-        font-family: Arial;
-        padding: 40px;
-        max-width: 600px;
-        margin: auto;
-      }
-      input {
-        padding: 10px;
-        width: 100%;
-        font-size: 16px;
-      }
-      button {
-        padding: 10px;
-        margin-top: 10px;
-        width: 100%;
-        font-size: 16px;
-      }
-      #result {
-        margin-top: 20px;
-        font-size: 18px;
-      }
-    </style>
-  </head>
-  <body>
-    <h2>Barrel Compression Lookup</h2>
-
-    <input id="modelInput" placeholder="Enter model number" />
-    <button onclick="lookup()">Search</button>
-
-    <div id="result"></div>
-
-    <script>
-      async function lookup() {
-        const model = document.getElementById("modelInput").value.trim();
-
-        if (!model) return;
-
-        const response = await fetch(`/lookup?model=${model}`);
-        const resultDiv = document.getElementById("result");
-
-        if (response.status === 404) {
-          resultDiv.innerHTML = "Model not found.";
-          return;
+        body {
+            font-family: Arial;
+            padding: 40px;
+            max-width: 1100px;
+            margin: auto;
         }
 
-        const data = await response.json();
-        const bat = data[0];
+        .container {
+            display: flex;
+            gap: 40px;
+        }
 
-        resultDiv.innerHTML = `
-        <strong>Manufacturer:</strong> ${bat.Manufacturer}<br>
-        <strong>Model:</strong> ${bat.Model}<br>
-        <strong>Cutoff:</strong> ${bat["Barrel Compression Cutoff (psi)"]} psi<br>
-        <strong>Date Added:</strong> ${bat["Date Added"]}
+        .column {
+            flex: 1;
+        }
+
+        input, select {
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .result-box {
+            margin-top: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .big-cutoff {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Bat Compression Tool</h2>
+
+<div class="container">
+
+    <!-- LEFT COLUMN: Exact Model Search -->
+    <div class="column">
+        <h3>Search by Model Number</h3>
+
+        <input id="modelInput" placeholder="Enter exact model number">
+        <button onclick="lookup()">Search</button>
+
+        <div id="modelResult"></div>
+    </div>
+
+    <!-- RIGHT COLUMN: Manufacturer + Description -->
+    <div class="column">
+        <h3>Search by Manufacturer & Model Name</h3>
+
+        <input id="manufacturerInput" placeholder="Manufacturer">
+        <input id="descriptionInput" placeholder="Model Name">
+        <button onclick="searchDescription()">Search</button>
+
+        <div id="descResult"></div>
+    </div>
+
+</div>
+
+<script>
+async function lookup() {
+    const model = document.getElementById("modelInput").value.trim();
+    const resultDiv = document.getElementById("modelResult");
+
+    if (!model) return;
+
+    const response = await fetch(`/lookup?model=${model}`);
+
+    if (response.status === 404) {
+        resultDiv.innerHTML = "Model not found.";
+        return;
+    }
+
+    const data = await response.json();
+    const bat = data[0];
+
+    resultDiv.innerHTML = `
+        <div class="result-box">
+            <div><strong>Manufacturer:</strong> ${bat.Manufacturer}</div>
+            <div><strong>Model:</strong> ${bat.Model}</div>
+            <div><strong>Description:</strong> ${bat.Description}</div>
+            <div class="big-cutoff">
+                Cutoff: ${bat["Barrel Compression Cutoff (psi)"]} psi
+            </div>
+        </div>
     `;
-      }
-    </script>
-  </body>
+}
+
+async function searchDescription() {
+    const manufacturer = document.getElementById("manufacturerInput").value.trim();
+    const description = document.getElementById("descriptionInput").value.trim();
+    const resultDiv = document.getElementById("descResult");
+
+    const response = await fetch(
+        `/search?manufacturer=${manufacturer}&description=${description}`
+    );
+
+    if (response.status === 404) {
+        resultDiv.innerHTML = "No matches found.";
+        return;
+    }
+
+    const data = await response.json();
+
+    resultDiv.innerHTML = data.map(bat => `
+        <div class="result-box">
+            <div><strong>Model:</strong> ${bat.Model}</div>
+            <div><strong>Description:</strong> ${bat.Description}</div>
+            <div><strong>Cutoff:</strong> ${bat["Barrel Compression Cutoff (psi)"]} psi</div>
+        </div>
+    `).join("");
+}
+</script>
+
+</body>
 </html>

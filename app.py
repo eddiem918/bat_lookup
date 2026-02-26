@@ -15,6 +15,10 @@ def normalize(value):
 
 df["MODEL_NORMALIZED"] = df["Model"].apply(normalize)
 
+@app.errorhandler(Exception)
+def handle_exception(e):
+    return jsonify({"error": "Internal error. Please try again."}), 500
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -40,6 +44,35 @@ def lookup():
         "Description",
         "Barrel Compression Cutoff (psi)",
         "Date Added"
+    ]].to_dict(orient="records")
+
+    return jsonify(results)
+
+@app.route("/search")
+def search():
+    manufacturer = request.args.get("manufacturer", "").strip().lower()
+    description = request.args.get("description", "").strip().lower()
+
+    filtered = df.copy()
+
+    if manufacturer:
+        filtered = filtered[
+            filtered["Manufacturer"].str.lower().str.contains(manufacturer)
+        ]
+
+    if description:
+        filtered = filtered[
+            filtered["Description"].str.lower().str.contains(description)
+        ]
+
+    if filtered.empty:
+        return jsonify({"error": "No matches found"}), 404
+
+    results = filtered[[
+        "Manufacturer",
+        "Model",
+        "Description",
+        "Barrel Compression Cutoff (psi)"
     ]].to_dict(orient="records")
 
     return jsonify(results)
